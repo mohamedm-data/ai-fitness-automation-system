@@ -1,4 +1,5 @@
 # ai-fitness-automation-system
+##Mohamed Mohamed, Huy Minh Van, Yusuf Ali
 Agentic AI Final Project.
 
 
