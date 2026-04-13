@@ -1,0 +1,235 @@
+{
+  "name": "Huy Gym Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "6b2108f8-02c5-4662-a75d-3c0c8d4c32c0",
+      "name": "When chat message received",
+      "webhookId": "e0cdb0a0-7d15-484d-b536-f3ec6936622d"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are Huy Gym Assistant, an AI agent that helps users choose gym equipment and create practical workout recommendations.\n\nYour responsibilities:\n1. Ask the user about their fitness goals, budget, experience level, available equipment, and any limitations or injuries when relevant.\n2. Use the \"Find gym equipment\" tool to search for the top 3 relevant gym equipment options when needed.\n3. Use the \"Generate Workout Plan\" tool whenever the user asks for a workout plan, training split, or exercise routine.\n4. Present recommendations clearly, briefly, and in an easy-to-follow format.\n5. Ask for user feedback and refine recommendations based on their preferences.\n6. When the user provides an email address and confirms they want results sent, use the \"Send my wishlist results\" tool to send the final recommendations.\n7. Stay focused on fitness, gym equipment, exercise planning, and workout support.\n\nRules:\n- Be concise, helpful, and practical.\n- Always ask follow-up questions if important information is missing.\n- Do not send email unless the user clearly confirms the email address and asks for it to be sent.\n- Do not mention internal tool names unless necessary.\n- Do not mention internal errors, tool failures, or implementation details to the user.\n- If a tool fails, try again if appropriate. If needed, continue with a normal helpful answer without mentioning the failure.\n- Keep recommendations beginner-friendly unless the user asks for advanced guidance.\n- Prefer clear bullet points or short sections when giving workouts or equipment suggestions.\n- Tailor responses to the user’s goal such as muscle gain, fat loss, strength, endurance, or general fitness.\n- If the user mentions pain, injury, or physical limitations, recommend safer modifications and suggest consulting a qualified professional for medical clearance when appropriate.\n- Do not go off-topic into unrelated subjects.\n-If the user asks about calories, protein, diet, bulking, cutting, or nutrition, use the \"Calculate Calories and Protein\" tool.\n\nTool-use instructions:\n- For equipment recommendations, use the \"Find gym equipment\" tool when the user wants product suggestions, comparisons, or shopping help.\n- For workout-plan requests, ALWAYS call the \"Generate Workout Plan\" tool first.\n- When calling \"Generate Workout Plan\", pass the user’s full workout request into the tool input.\n- After the tool returns output, present the workout_plan clearly to the user.\n- If the user asks to review, improve, or rate a workout, use the workout feedback tool if available.\n- If the user asks to send results by email, confirm the email first, then use the email tool.\n\nResponse style:\n- Be motivating, but not overly wordy.\n- Make answers feel like a helpful gym coach and shopping assistant.\n- Keep outputs organized and easy to scan.\n- When giving a workout, include sets, reps, and brief progression advice if available.\n- When giving equipment suggestions, explain why each item fits the user’s needs.\n\nConversation behavior:\n- If the user is vague, ask 1–3 short follow-up questions.\n- If the user gives enough details, act immediately and use the right tool.\n- Remember prior preferences when memory is available, such as budget, equipment, workout frequency, and goals.\n- If the user changes goals, adapt the recommendations accordingly.\n\nExamples of behavior:\n- If the user says “I want a workout plan,” gather missing details or use what they already gave, then call \"Generate Workout Plan\".\n- If the user says “Find me home gym equipment under $300,” use \"Find gym equipment\".\n- If the user says “Email me the results,” ask for confirmation of the email address, then use \"Send my wishlist results\".",
+          "maxIterations": 5
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "653fc929-38ab-47ab-99d2-cdd7b487a2a1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        80,
+        208
+      ],
+      "id": "397aa463-0992-4379-9abc-2778bc07e7a4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "uaSAD7WlDm7HRPEe",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        208
+      ],
+      "id": "8a2bc79f-5eeb-4bd4-bed6-45d8cad8299d",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "typeVersion": 1,
+      "position": [
+        480,
+        176
+      ],
+      "id": "b3d470eb-fe58-41c8-b527-ae599a9963fe",
+      "name": "Find gym equipment",
+      "credentials": {
+        "serpApi": {
+          "id": "GfOJ9IrRQ1uOpYS0",
+          "name": "SerpAPI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        368,
+        208
+      ],
+      "id": "c63c8eca-edcf-4f3f-ac1f-bcc157c2f734",
+      "name": "Send a message in Gmail",
+      "webhookId": "7688ffd5-437b-44be-8064-6752c4fca491",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "nnr0mSPkWnhnqPy8",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "description": "Generate a structured beginner workout plan based on user goals, experience, and available equipment.",
+        "jsCode": "const text = query || \"Beginner workout plan, 3 days, dumbbells only, goal muscle gain\";\n\nconst result = `Beginner 3-day dumbbell muscle-gain workout\n\nRequest:\n${text}\n\nWarm-up:\n- 5–8 min light cardio\n- Arm circles, leg swings, hip circles\n- 1 light warm-up set before first exercise\n\nWorkout A\n- Goblet Squat: 3 x 8–12\n- Dumbbell Floor Press: 3 x 8–12\n- One-Arm Dumbbell Row: 3 x 8–12 each side\n- Romanian Deadlift: 3 x 8–12\n- Shoulder Press: 2 x 8–12\n- Plank: 3 x 30–60 sec\n\nWorkout B\n- Bulgarian Split Squat: 3 x 8–10 each leg\n- Incline/Floor Dumbbell Press: 3 x 8–12\n- Bent-Over Dumbbell Row: 3 x 8–12\n- Single-Leg Romanian Deadlift: 3 x 8 each leg\n- Lateral Raise: 2 x 12–15\n- Farmer Carry: 2 x 30–60 sec\n\nWorkout C\n- Dumbbell Front Squat: 3 x 8–12\n- Single-Arm Dumbbell Press: 3 x 8–12 each side\n- Supported Dumbbell Row: 3 x 6–10 each side\n- Reverse Lunge: 3 x 8–10 each leg\n- Hammer Curl: 2 x 10–12\n- Overhead Triceps Extension: 2 x 10–12\n- Dead Bug: 3 x 8–12 each side\n\nProgression:\n- Add 1–2 reps when possible\n- Increase weight once top reps feel controlled\n- Rest 60–90 sec on compounds, 45–60 sec on accessories`;\n\nreturn result;"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        304
+      ],
+      "id": "3ee821c2-cc5e-4916-a774-b21e5a639d34",
+      "name": "Generate Workout Plan"
+    },
+    {
+      "parameters": {
+        "description": "Calculate daily calories and protein based on user stats like weight, height, age, gender, goal, and activity level.",
+        "jsCode": "const text = query || \"male 70kg 175cm 21 years old muscle gain moderate activity\";\n\nconst lower = text.toLowerCase();\n\nlet weightKg = 70;\nlet heightCm = 175;\nlet age = 21;\nlet sex = \"male\";\nlet goal = \"maintain\";\nlet activity = 1.55;\n\n// extract values\nconst weightMatch = lower.match(/(\\d+)\\s*kg/);\nif (weightMatch) weightKg = parseInt(weightMatch[1]);\n\nconst heightMatch = lower.match(/(\\d+)\\s*cm/);\nif (heightMatch) heightCm = parseInt(heightMatch[1]);\n\nconst ageMatch = lower.match(/(\\d+)\\s*(years|yo)/);\nif (ageMatch) age = parseInt(ageMatch[1]);\n\nif (lower.includes(\"female\")) sex = \"female\";\nif (lower.includes(\"male\")) sex = \"male\";\n\nif (lower.includes(\"muscle\") || lower.includes(\"bulk\")) goal = \"muscle gain\";\nif (lower.includes(\"fat\") || lower.includes(\"cut\")) goal = \"fat loss\";\n\nif (lower.includes(\"sedentary\")) activity = 1.2;\nif (lower.includes(\"light\")) activity = 1.375;\nif (lower.includes(\"moderate\")) activity = 1.55;\nif (lower.includes(\"active\")) activity = 1.725;\nif (lower.includes(\"very active\")) activity = 1.9;\n\n// BMR\nlet bmr;\nif (sex === \"male\") {\n  bmr = 10 * weightKg + 6.25 * heightCm - 5 * age + 5;\n} else {\n  bmr = 10 * weightKg + 6.25 * heightCm - 5 * age - 161;\n}\n\n// calories\nlet calories = Math.round(bmr * activity);\n\nif (goal === \"muscle gain\") calories += 250;\nif (goal === \"fat loss\") calories -= 400;\n\n// protein\nconst proteinMin = Math.round(weightKg * 1.6);\nconst proteinMax = Math.round(weightKg * 2.2);\n\nreturn `Nutrition Plan\n\nInput:\n${text}\n\nCalories: ${calories} kcal/day\nProtein: ${proteinMin}–${proteinMax} g/day\n\nGoal: ${goal}\nActivity level: ${activity}\n\nTip:\n- Adjust calories every 2–3 weeks based on progress`;"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolCode",
+      "typeVersion": 1.3,
+      "position": [
+        560,
+        208
+      ],
+      "id": "8d40cade-f599-4cde-90dd-669648bc91db",
+      "name": "Calculate Calories and Protein"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find gym equipment": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Workout Plan": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Calories and Protein": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "673bc1b6-13f5-4691-80e7-d35aecd19bac",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1b3d6df656e04b5ee4949a3d1768065a24e7b004cb3e59a362b6a60c3ef17e3c"
+  },
+  "id": "CofXWbTJNuFHgswb",
+  "tags": []
+}
